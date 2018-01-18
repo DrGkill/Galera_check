@@ -1,5 +1,5 @@
-Galera check utility for ensuring Consistency and Availability OR Consistency and Partitioning
-==============================================================================================
+Galera check utility for ensuring Consistency and Availability OR Consistency and Partition tolerence
+=====================================================================================================
 
 Table of contents
 =================
@@ -12,11 +12,20 @@ Table of contents
 Intro
 =====
 
-This project gives the ability to ensure failover on a Galera cluster. It helps to chose wich node
-will answer to queries regarding your policy (availability or partitionning tolerence).
-As you may know, in distributed system, you cannot ensure consistency, availability and partitioning
-tolerence at the same time.
-Galera offer concentrate on consistency and can add availability OR partitioning tolerence.
+This project gives the ability to ensure failover on a Galera cluster. It helps to chose which node
+will answer queries regarding your policy (availability or partitionning tolerence).
+As you may know, in distributed system, you cannot ensure consistency, availability and partition
+tolerence at the same time. (http://galeracluster.com/documentation-webpages/recovery.html)
+Galera concentrate on consistency and can add availability OR partitioning tolerence. This script will
+ allow you to chose either availability or partition tolerence.
+
+This system aims to be lightweight, robust and lightning fast. It takes only 1ms for the script to take a decision.
+
+
+Haproxy get the check result within a millisecond:
+```
+L7OK/200 in 1ms
+```
 
 
 Installation
