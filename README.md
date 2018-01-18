@@ -5,12 +5,12 @@ Table of contents
 =================
 
   * [Introduction] (#intro)
-  * [Install] (#installation)
+  * [Installation] (#installation)
   * [Config options] (#config-options)
 
 
-Intro
-=====
+Introduction
+============
 
 This project gives the ability to ensure failover on a Galera cluster. It helps to chose which node
 will answer queries regarding your policy (availability or partitionning tolerence).
