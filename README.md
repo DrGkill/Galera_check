@@ -4,9 +4,9 @@ Galera check utility for ensuring Consistency and Availability OR Consistency an
 Table of contents
 =================
 
-  - [Introduction] (#intro)
-  - [Installation] (#installation)
-  - [Config options] (#config-options)
+  * [Introduction] (#introduction)
+  * [Installation] (#installation)
+  * [Config options] (#config-options)
 
 
 Introduction
