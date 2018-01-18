@@ -4,9 +4,9 @@ Galera check utility for ensuring Consistency and Availability OR Consistency an
 Table of contents
 =================
 
-  * [Introduction] (#intro)
-  * [Installation] (#installation)
-  * [Config options] (#config-options)
+  - [Introduction] (#intro)
+  - [Installation] (#installation)
+  - [Config options] (#config-options)
 
 
 Introduction
@@ -41,6 +41,7 @@ Copy configs and library inside the nginx config dir:
 
 ```
 cp nginx.config /etc/nginx/sites-available/galeracheck
+cp -r perl /etc/nginx
 cd /etc/nginx/sites-enabled && ln -s ../sites-available/galeracheck
 ```
 
