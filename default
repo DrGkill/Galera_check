@@ -1,0 +1,24 @@
+# Galera cluster check
+#
+
+
+perl_modules /etc/nginx/perl/lib;
+perl_require galera.pm;
+variables_hash_max_size 2048; 
+variables_hash_bucket_size 128;
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    location / {
+        access_log off;
+        set $ghost "localhost";
+        set $gport "3306";
+        set $guser "wsrep_sst_user";
+        set $gpass "wsrep_sst_password";
+        set $gmode "CA";
+        perl galera::handler;
+    }
+}
+
