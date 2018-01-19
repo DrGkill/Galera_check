@@ -21,6 +21,37 @@ Galera concentrate on consistency and can add availability OR partitioning toler
 
 This system aims to be lightweight, robust and lightning fast. It takes only 1ms for the script to take a decision.
 
+It can be used in conjuction with HAproxy or Proxysql. It also can be used for monitoring purpose and handle a 
+text/plain output or a json output, making it more interactive.
+
+```
+# curl -i -H 'Accept: application/json' http://127.0.0.1 
+HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Date: Fri, 19 Jan 2018 09:13:48 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+
+{ 'cluster_size': '2', 'ready': 'ON', 'connection_status': 'ON', 'evs_state': 'OPERATIONAL', 'local_state': 'Synced' }
+```
+
+
+```
+# curl -i -H 'Accept: text/plain' http://127.0.0.1 
+HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Date: Fri, 19 Jan 2018 09:09:31 GMT
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Connection: keep-alive
+
+Cluster size   : 3
+Ready          : ON
+Connected      : ON
+EVS State      : OPERATIONAL
+Local State    : Synced
+```
 
 Haproxy get the check result within a millisecond:
 ```

@@ -89,8 +89,6 @@ use Data::Dumper;
 sub handler {
     my $r = shift;
 
-    $r->send_http_header("text/plain");
-
     my %ds;
 
     my ($host,$port);
@@ -136,16 +134,14 @@ sub handler {
 
     if ($r->header_in('Accept') eq 'application/json') {
         $r->send_http_header("application/json");
-        $r->print(sprintf("{ 'Cluster size': '%s', 'Ready': '%s', 'EVS State': '%s', 'Cluster size': '%s', 'Local State': '%s' }\r\n",
+        $r->print(sprintf("{ 'cluster_size': '%s', 'ready': '%s', 'connection_status': '%s', 'evs_state': '%s', 'local_state': '%s' }\r\n",
             $ds{'wsrep_cluster_size'}, 
             $ds{'wsrep_ready'},
             $ds{'wsrep_connected'},
             $ds{'wsrep_evs_state'},
-            $ds{'wsrep_cluster_size'},
             $ds{'wsrep_local_state_comment'}));
     } else {
         $r->send_http_header("text/plain");
-        $r->print(sprintf("%-15s: %s\r\n", 'Cluster size', $ds{'wsrep_cluster_size'}));
         $r->print(sprintf("%-15s: %s\r\n", 'Ready',        $ds{'wsrep_ready'}));
         $r->print(sprintf("%-15s: %s\r\n", 'Connected',    $ds{'wsrep_connected'}));
         $r->print(sprintf("%-15s: %s\r\n", 'EVS State',    $ds{'wsrep_evs_state'}));
