@@ -21,7 +21,7 @@ Galera concentrate on consistency and can add availability OR partitioning toler
 
 This system aims to be lightweight, robust and lightning fast. It takes only 1ms for the script to take a decision.
 
-It can be used in conjuction with HAproxy or Proxysql. It also can be used for monitoring purpose and handle a 
+It can be used in conjuction with [HAproxy](http://www.haproxy.org/) or [Proxysql](http://www.proxysql.com/). It also can be used for monitoring purpose and handle a 
 text/plain output or a json output, making it more interactive.
 
 It retunrs a 200 OK HTTP status when it thinks the node is Ok else a 500 Internal Error HTTP status.
