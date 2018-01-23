@@ -1,8 +1,8 @@
 ###############################################################################
-# Script Description : Galera check system made to be used in conjunction 
-#                      with Haproxy. 
+# Script Description : Galera check system made to be used in conjunction
+#                      with Haproxy.
 #                      See Readme file for config examples.
-#                        
+#
 # Author:   Guillaume Seigneuret
 # Date:     17/01/2017
 # Version:  1.0
@@ -11,7 +11,7 @@
 #
 # Utilisation:
 #
-# Nginx config : 
+# Nginx config :
 # perl_modules /etc/nginx/perl/lib;
 # perl_require galera.pm;
 #
@@ -47,16 +47,16 @@
 #
 #   CLUSTER AVAILABILITY VS. PARTITION TOLERANCE:
 #
-#  Within the CAP theorem, Galera Cluster emphasizes data safety 
-#  and consistency. This leads to a trade-off between cluster 
-#  availability and partition tolerance. That is, when using unstable 
-#  networks, such as WAN, low evs.suspect_timeout and 
-#  evs.inactive_timeout values may result in false node failure 
-#  detections, while higher values on these parameters may result in 
+#  Within the CAP theorem, Galera Cluster emphasizes data safety
+#  and consistency. This leads to a trade-off between cluster
+#  availability and partition tolerance. That is, when using unstable
+#  networks, such as WAN, low evs.suspect_timeout and
+#  evs.inactive_timeout values may result in false node failure
+#  detections, while higher values on these parameters may result in
 #  longer availability outages in the event of actual node failures.
-#  Essentially what this means is that the evs.suspect_timeout 
-#  parameter defines the minimum time needed to detect a failed node. 
-#  During this period, the cluster is unavailable due to the 
+#  Essentially what this means is that the evs.suspect_timeout
+#  parameter defines the minimum time needed to detect a failed node.
+#  During this period, the cluster is unavailable due to the
 #  consistency constraint.
 #  (http://galeracluster.com/documentation-webpages/recovery.html)
 #
@@ -104,7 +104,7 @@ sub handler {
     } else {
         $port = "3306";
     }
-    
+
     return HTTP_SERVICE_UNAVAILABLE if not defined($r->variable('guser'));
     return HTTP_SERVICE_UNAVAILABLE if not defined($r->variable('gpass'));
 
@@ -125,6 +125,8 @@ sub handler {
     # Disconnect from the database.
     $dbh->disconnect();
 
+    my ($repl_min, $repl_max, $repl_avg, $repl_stdev, $repl_samplesize) = pasrse_repl_latency($ds{'wsrep_evs_repl_latency'});
+
     $ds{'wsrep_ready'}               = "NA" if not defined($ds{'wsrep_ready'});
     $ds{'wsrep_connected'}           = "NA" if not defined($ds{'wsrep_connected'});
     $ds{'wsrep_evs_state'}           = "NA" if not defined($ds{'wsrep_evs_state'});
@@ -134,12 +136,31 @@ sub handler {
 
     if ($r->header_in('Accept') eq 'application/json') {
         $r->send_http_header("application/json");
-        $r->print(sprintf("{ 'cluster_size': '%s', 'ready': '%s', 'connection_status': '%s', 'evs_state': '%s', 'local_state': '%s' }\r\n",
-            $ds{'wsrep_cluster_size'}, 
+        $r->print(sprintf("{".
+            '"cluster_size": "%s", '.
+            '"ready": "%s", '.
+            '"connection_status": "%s", '.
+            '"evs_state": "%s", '.
+            '"local_state": "%s", '.
+            '"replication_latency": { '.
+                '"min": "%s", '.
+                '"max": "%s", '.
+                '"avg": "%s", '.
+                '"stdev": "%s", '.
+                '"sample_size": "%s" '.
+                '}'.
+            '}'."\r\n",
+            $ds{'wsrep_cluster_size'},
             $ds{'wsrep_ready'},
             $ds{'wsrep_connected'},
             $ds{'wsrep_evs_state'},
-            $ds{'wsrep_local_state_comment'}));
+            $ds{'wsrep_local_state_comment'},
+            $repl_min,
+            $repl_max,
+            $repl_avg,
+            $repl_stdev,
+            $repl_samplesize
+        ));
     } else {
         $r->send_http_header("text/plain");
         $r->print(sprintf("%-15s: %s\r\n", 'Ready',        $ds{'wsrep_ready'}));
@@ -147,12 +168,13 @@ sub handler {
         $r->print(sprintf("%-15s: %s\r\n", 'EVS State',    $ds{'wsrep_evs_state'}));
         $r->print(sprintf("%-15s: %s\r\n", 'Cluster size', $ds{'wsrep_cluster_size'}));
         $r->print(sprintf("%-15s: %s\r\n", 'Local State',  $ds{'wsrep_local_state_comment'}));
+        $r->print(sprintf("%-15s: %s\r\n", 'Latency',      $ds{'wsrep_evs_repl_latency'}));
     }
 
     if ($r->variable('gmode') eq "CP") {
         # Node are partitioned and if client can reach us,
         # we are the right candidate (still need to be synced)
-        return OK if int($ds{'wsrep_cluster_size'}) == 1 
+        return OK if $ds{'wsrep_cluster_status'} eq "Primary"
             and $ds{'wsrep_local_state_comment'} eq "Synced";
     }
 
@@ -168,6 +190,12 @@ sub handler {
     return HTTP_SERVER_ERROR if $ds{'wsrep_cluster_status'}      ne "Primary";
 
     return OK;
+}
+
+sub pasrse_repl_latency {
+    my $repl_latency = shift;
+    my ($min, $max, $avg, $stdev, $samplesize) = split /\//, $repl_latency;
+    return ($min, $max, $avg, $stdev, $samplesize);
 }
 
 1;

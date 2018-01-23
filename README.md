@@ -24,6 +24,8 @@ This system aims to be lightweight, robust and lightning fast. It takes only 1ms
 It can be used in conjuction with HAproxy or Proxysql. It also can be used for monitoring purpose and handle a 
 text/plain output or a json output, making it more interactive.
 
+It retunrs a 200 OK HTTP status when it thinks the node is Ok else a 500 Internal Error HTTP status.
+
 ```
 # curl -i -H 'Accept: application/json' http://127.0.0.1 
 HTTP/1.1 200 OK
@@ -33,7 +35,8 @@ Content-Type: application/json
 Transfer-Encoding: chunked
 Connection: keep-alive
 
-{ 'cluster_size': '2', 'ready': 'ON', 'connection_status': 'ON', 'evs_state': 'OPERATIONAL', 'local_state': 'Synced' }
+{"cluster_size": "3", "ready": "ON", "connection_status": "ON", "evs_state": "OPERATIONAL", "local_state": "Synced", "replication_latency": { "min": "0.000171405", "max": "0.000268492", "avg": "0.000483291", "
+stdev": "6.05793e-05", "sample_size": "92" }}
 ```
 
 
@@ -46,11 +49,13 @@ Content-Type: text/plain
 Transfer-Encoding: chunked
 Connection: keep-alive
 
-Cluster size   : 3
 Ready          : ON
 Connected      : ON
 EVS State      : OPERATIONAL
+Cluster size   : 3
 Local State    : Synced
+Latency        : 0.000180519/0.000266829/0.000373653/4.96227e-05/53
+
 ```
 
 Haproxy get the check result within a millisecond:
